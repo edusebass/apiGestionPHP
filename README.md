@@ -9,3 +9,5 @@ composer create-project laravel/laravel apiGestionPHP
 php artisan make:model Customer --all
 
 el comando all crea model factory migration seeder request controller policy
+
+php artisan install:api
