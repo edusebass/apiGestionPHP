@@ -2,23 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\InvoiceFilter;
 use App\Models\Invoice;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Resources\InvoiceCollection;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-        $invoices = Invoice::all();
-        return new InvoiceCollection($invoices);
+        $filter = new InvoiceFilter();
+        $queryItems = $filter->transform($request);
+        if (count($queryItems) === 0) {
+            return new InvoiceCollection(Invoice::paginate());
+        } else {
+            $invoices = Invoice::where($queryItems)->paginate();
+            return new InvoiceCollection($invoices->appends($request->query()));
+        }
     }
-
     /**
      * Show the form for creating a new resource.
      */
